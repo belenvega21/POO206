@@ -22,7 +22,7 @@ print(variable1[:4])
 
 #3. Variables
 
-#5Mike = o #no puedes crear variables con números al inicio
+#5Belen = o #no puedes crear variables con números al inicio
 
 
 x = "Belen"
@@ -40,3 +40,30 @@ print(x, y, z)
 print(type(x))
 print(type(y))
 print(type(z))
+
+
+#4. Solicitud de datos
+
+a = input("Introduce cualquier dato: ")
+
+b = int(input("Introduce un número entero: "))
+
+c = float(input("Introduce un número decimal: "))
+
+d = str(input("Introduce cualquier texto: "))
+
+
+#5. Boolean, comparacion y logicos
+
+print(10>9)
+print(10<9)
+print(10==9)
+print(10>=9)
+print(10<=9)
+print(10!=9)
+
+x = 1
+
+print(x<5 and x<10)
+print(x<5 or x<10)
+print(not(x<5 and x<10))
