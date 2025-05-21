@@ -7,7 +7,6 @@ Si tu comentario es mayor a dos lieas van dentro de 3 comillas
 """
 #Belen practica
 
-#Miguel
 
 #2. Strings
 
