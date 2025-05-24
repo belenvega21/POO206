@@ -1,5 +1,7 @@
+import re
 
 while True:
+    try:
         contraseña = input("Ingresa una contraseña (o escribe 'salir'): ")
         if contraseña.lower() == "salir":
             break
@@ -12,5 +14,6 @@ while True:
             print("Debe contener al menos un carácter especial")
         else:
             print("Contraseña correcta")
+    
     except Exception as e:
         print(f"Ocurrió un error: {e}")
