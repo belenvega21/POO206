@@ -13,6 +13,6 @@ while True:
             print("El numero es impar")
     except ValueError:
         print("Error: Agrega un número entero. ")
-    except Exception as e:
-        print(f"Ocurrio un error: {e} ")
+    except Exception as a:
+        print(f"Ocurrio un error: {a} ")
     
