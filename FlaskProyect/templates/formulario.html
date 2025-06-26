@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar Álbum</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 30px;
+        }
+        input, label, button {
+            margin-bottom: 10px;
+            display: block;
+        }
+        span {
+            font-size: 0.9em;
+            color: red;
+        }
+        h4 {
+            color: green;
+        }
+        ul {
+            margin-top: 20px;
+        }
+        a {
+            text-decoration: none;
+            color: navy;
+        }
+        a:hover {
+            text-decoration: underline;
+            color: darkred;
+        }
+    </style>
+</head>
+<body>
+    <h2>Formulario para Guardar Álbum</h2>
+
+    {% with mensajes = get_flashed_messages() %}
+        {% if mensajes %}
+            {% for msj in mensajes %}
+                <h4>{{ msj }}</h4>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="/guardarAlbum">
+        <label for="txtTitulo">Título:</label>
+        <input type="text" name="txtTitulo" id="txtTitulo" value="{{ request.form.get('txtTitulo', '') }}">
+        {% if errores and errores['txtTitulo'] %}
+            <span>{{ errores['txtTitulo'] }}</span>
+        {% endif %}
+
+        <label for="txtArtista">Artista:</label>
+        <input type="text" name="txtArtista" id="txtArtista" value="{{ request.form.get('txtArtista', '') }}">
+        {% if errores and errores['txtArtista'] %}
+            <span>{{ errores['txtArtista'] }}</span>
+        {% endif %}
+
+        <label for="txtAño">Año:</label>
+        <input type="text" name="txtAño" id="txtAño" value="{{ request.form.get('txtAño', '') }}">
+        {% if errores and errores['txtAño'] %}
+            <span>{{ errores['txtAño'] }}</span>
+        {% endif %}
+
+        <button type="submit">Guardar</button>
+    </form>
+
+ 
+
+    <h2>Álbumes registrados</h2>
+    {% for alb in albums %}
+    <li>
+        <a href="{{ url_for('detalle', id=alb.id) }}">
+            <strong>{{ alb.titulo }}</strong> - {{ alb.artista }} ({{ alb.año }})
+        </a>
+    </li>
+{% endfor %}
+</ul>
+
+
+</body>
+</html>

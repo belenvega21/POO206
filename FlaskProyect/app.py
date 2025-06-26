@@ -1,11 +1,11 @@
-from flask import Flask, jsonify, request, render_template, Response, url_for, flash, redirect
+from flask import Flask, jsonify, request, render_template, url_for, flash, redirect
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 
 app = Flask(__name__)
 app.secret_key = 'tequieromucho123'
 
-# Conexión a MySQL en Docker
+# Configuración de conexión a MySQL en Docker
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:belenvega@127.0.0.1:3307/dbflask'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -31,7 +31,7 @@ class Album(db.Model):
     def to_dict(self):
         return {'id': self.id, 'titulo': self.titulo, 'artista': self.artista, 'año': self.año}
 
-# Ruta para verificar conexión
+# Verificar conexión
 @app.route('/DBcheck')
 def db_check():
     try:
@@ -40,12 +40,32 @@ def db_check():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)})
 
-# Página principal
+# Página principal - mostrar álbumes
 @app.route('/')
 def home():
-    return render_template('formulario.html', errores={})
+    try:
+        consultaTodo = Album.query.all()
+        return render_template('formulario.html', errores={}, albums=consultaTodo)
+    except Exception as e:
+        print('Error al consultar todo:', str(e))
+        return render_template('formulario.html', errores={}, albums=[])
 
-# Página opcional
+
+#RUTA DETALLE
+@app.route('/detalle/<int:id>')
+def detalle(id):
+    try:
+        consultaId = Album.query.get(id)
+        if consultaId is None:
+            raise Exception(f"No se encontró el álbum con ID {id}")
+        return render_template('consulta.html', album=consultaId)
+    except Exception as e:
+        print('ERROR AL CONSULTAR DETALLE:', str(e))  
+        return render_template('consulta.html', album=None)
+
+
+
+# Página adicional
 @app.route('/consulta')
 def consulta():
     return render_template('consulta.html')
@@ -66,7 +86,7 @@ def crear_usuario():
 
     return jsonify({'mensaje': 'Usuario creado', 'usuario': nuevo_usuario.to_dict()}), 201
 
-# Obtener usuarios
+# Obtener todos los usuarios
 @app.route('/usuarios', methods=['GET'])
 def obtener_usuarios():
     usuarios = Usuario.query.all()
@@ -91,7 +111,8 @@ def guardar_album():
             errores['txtAño'] = 'Ingresa un año válido.'
 
         if errores:
-            return render_template('formulario.html', errores=errores)
+            albums = Album.query.all()
+            return render_template('formulario.html', errores=errores, albums=albums)
 
         nuevo_album = Album(titulo=titulo, artista=artista, año=año)
         db.session.add(nuevo_album)
@@ -105,16 +126,18 @@ def guardar_album():
         flash('Algo falló: ' + str(e))
         return redirect(url_for('home'))
 
-# Mostrar álbumes guardados
+# Ver todos los álbumes (opcional)
 @app.route('/albums')
 def ver_albums():
     albums = Album.query.all()
     return render_template('ver_albums.html', albums=albums)
 
-# Página 404
+# Página 404 personalizada
 @app.errorhandler(404)
 def pagina_no_encontrada(e):
     return '¡Cuidado! ¡Error de capa 8!', 404
 
+# Iniciar servidor
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3000, debug=True)
+
