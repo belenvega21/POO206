@@ -25,7 +25,7 @@
                 <td>{{ album.titulo }}</td>
                 <td>{{ album.artista }}</td>
                 <td>{{ album.año }}</td>
-                <td><a href="#">Actualizar</a></td>
+                <td><a href="{{ url_for('form_update', id=album.id) }}"">Actualizar</a></td>
                 <td><a href="#">Eliminar</a></td>
             </tr>
         </tbody>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Actualizar Álbum</title>
+</head>
+<body>
+    <h2>Actualizar Álbum</h2>
+
+    <form method="POST" action="/actualizarAlbum/{{ album.id }}">
+        <label for="titulo">Título:</label>
+        <input type="text" name="titulo" id="titulo" value="{{ request.form.get('titulo', album.titulo) }}">
+        {% if errores and errores['titulo'] %}
+            <span style="color: red;">{{ errores['titulo'] }}</span>
+        {% endif %}
+
+        <label for="artista">Artista:</label>
+        <input type="text" name="artista" id="artista" value="{{ request.form.get('artista', album.artista) }}">
+        {% if errores and errores['artista'] %}
+            <span style="color: red;">{{ errores['artista'] }}</span>
+        {% endif %}
+
+        <label for="año">Año:</label>
+        <input type="text" name="año" id="año" value="{{ request.form.get('año', album.año) }}">
+        {% if errores and errores['año'] %}
+            <span style="color: red;">{{ errores['año'] }}</span>
+        {% endif %}
+
+        <button type="submit">Actualiza Álbum</button>
+    </form>
+
+    <br>
+    <a href="/">Regresar al Formulario</a>
+</body>
+</html>

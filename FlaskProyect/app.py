@@ -64,6 +64,53 @@ def detalle(id):
         return render_template('consulta.html', album=None)
 
 
+# RUTA PARA MOSTRAR ACTUALIZACIÓN 
+@app.route('/formUpdate/<int:id>')
+def form_update(id):
+    album = Album.query.get(id)
+    if not album:
+        return pagina_no_encontrada(404)
+    return render_template('formUpdate.html', album=album)
+
+#RUTA PARA ACTUALIZAR UN ÁLBUM
+@app.route('/actualizarAlbum/<int:id>', methods=['POST'])
+def actualizar_album(id):
+    album = Album.query.get(id)
+    if not album:
+        return pagina_no_encontrada(404)
+
+    errores = {}
+
+    titulo = request.form.get('titulo', '').strip()
+    artista = request.form.get('artista', '').strip()
+    año = request.form.get('año', '').strip()
+
+    if not titulo:
+        errores['titulo'] = 'El título es obligatorio.'
+    if not artista:
+        errores['artista'] = 'El artista es obligatorio.'
+    if not año:
+        errores['año'] = 'El año es obligatorio.'
+    elif not año.isdigit() or int(año) < 1800 or int(año) > 2030:
+        errores['año'] = 'Ingresa un año válido.'
+
+    if errores:
+        return render_template('formUpdate.html', album=album, errores=errores)
+
+    try:
+        album.titulo = titulo
+        album.artista = artista
+        album.año = año
+        db.session.commit()
+        flash('Album Actualizado en BD')
+        return redirect(url_for('home'))
+
+    except Exception as e:
+        db.session.rollback()
+        flash('Error al actualizar: ' + str(e))
+        return redirect(url_for('home'))
+
+
 
 # Página adicional
 @app.route('/consulta')
