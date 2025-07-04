@@ -19,23 +19,6 @@
         h4 {
             color: green;
         }
-        ul {
-            margin-top: 20px;
-            list-style-type: none;
-            padding-left: 0;
-        }
-        li {
-            margin-bottom: 8px;
-        }
-        a {
-            text-decoration: none;
-            color: navy;
-            margin-right: 10px;
-        }
-        a:hover {
-            text-decoration: underline;
-            color: darkred;
-        }
     </style>
 </head>
 <body>
@@ -71,16 +54,6 @@
         <button type="submit">Guardar</button>
     </form>
 
-    <h2>Álbumes registrados</h2>
-    <ul>
-        {% for alb in albums %}
-            <li>
-                <a href="{{ url_for('detalle', id=alb.id) }}">
-                    <strong>{{ alb.titulo }}</strong> - {{ alb.artista }} ({{ alb.año }})
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
+    <br><a href="/albums">Ver álbumes guardados</a>
 </body>
 </html>
-

@@ -25,8 +25,8 @@
                 <td>{{ album.titulo }}</td>
                 <td>{{ album.artista }}</td>
                 <td>{{ album.año }}</td>
-                <td><a href="{{ url_for('form_update', id=album.id) }}"">Actualizar</a></td>
-                <td><a href="#">Eliminar</a></td>
+                <td><a href="{{ url_for('form_update', id=album.id) }}">Actualizar</a></td>
+                <td><a href="{{ url_for('confirmar_eliminacion', id=album.id) }}">Eliminar</a></td>
             </tr>
         </tbody>
     </table>
@@ -37,5 +37,3 @@
     <br><a href="/">Regresar al formulario</a>
 </body>
 </html>
-
-

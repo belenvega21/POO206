@@ -27,9 +27,16 @@ class Album(db.Model):
     titulo = db.Column(db.String(100), nullable=False)
     artista = db.Column(db.String(100), nullable=False)
     año = db.Column("Año", db.String(4), nullable=False)
+    state = db.Column(db.Integer, default=1)  # Soft Delete
 
     def to_dict(self):
-        return {'id': self.id, 'titulo': self.titulo, 'artista': self.artista, 'año': self.año}
+        return {
+            'id': self.id,
+            'titulo': self.titulo,
+            'artista': self.artista,
+            'año': self.año,
+            'state': self.state
+        }
 
 # Verificar conexión
 @app.route('/DBcheck')
@@ -40,18 +47,17 @@ def db_check():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)})
 
-# Página principal - mostrar álbumes
+# Página principal - mostrar álbumes activos
 @app.route('/')
 def home():
     try:
-        consultaTodo = Album.query.all()
+        consultaTodo = Album.query.filter_by(state=1).all()
         return render_template('formulario.html', errores={}, albums=consultaTodo)
     except Exception as e:
         print('Error al consultar todo:', str(e))
         return render_template('formulario.html', errores={}, albums=[])
 
-
-#RUTA DETALLE
+# Ruta para ver detalle
 @app.route('/detalle/<int:id>')
 def detalle(id):
     try:
@@ -63,8 +69,7 @@ def detalle(id):
         print('ERROR AL CONSULTAR DETALLE:', str(e))  
         return render_template('consulta.html', album=None)
 
-
-# RUTA PARA MOSTRAR ACTUALIZACIÓN 
+# Ruta para mostrar formulario de actualización
 @app.route('/formUpdate/<int:id>')
 def form_update(id):
     album = Album.query.get(id)
@@ -72,7 +77,7 @@ def form_update(id):
         return pagina_no_encontrada(404)
     return render_template('formUpdate.html', album=album)
 
-#RUTA PARA ACTUALIZAR UN ÁLBUM
+# Ruta para actualizar álbum
 @app.route('/actualizarAlbum/<int:id>', methods=['POST'])
 def actualizar_album(id):
     album = Album.query.get(id)
@@ -80,7 +85,6 @@ def actualizar_album(id):
         return pagina_no_encontrada(404)
 
     errores = {}
-
     titulo = request.form.get('titulo', '').strip()
     artista = request.form.get('artista', '').strip()
     año = request.form.get('año', '').strip()
@@ -102,7 +106,7 @@ def actualizar_album(id):
         album.artista = artista
         album.año = año
         db.session.commit()
-        flash('Album Actualizado en BD')
+        flash('Álbum actualizado en BD')
         return redirect(url_for('home'))
 
     except Exception as e:
@@ -110,7 +114,30 @@ def actualizar_album(id):
         flash('Error al actualizar: ' + str(e))
         return redirect(url_for('home'))
 
+# RUTA PARA CONFIRMAR ELIMINAR
+@app.route('/confirmar_eliminacion/<int:id>')
+def confirmar_eliminacion(id):
+    album = Album.query.get(id)
+    if not album:
+        return pagina_no_encontrada(404)
+    return render_template('confirmDel.html', album=album)
 
+# Ruta para eliminar (Soft Delete)
+@app.route('/eliminar_album/<int:id>', methods=['POST'])
+def eliminar_album(id):
+    album = Album.query.get(id)
+    if not album:
+        return pagina_no_encontrada(404)
+
+    try:
+        album.state = 0
+        db.session.commit()
+        flash('Álbum eliminado lógicamente.')
+    except Exception as e:
+        db.session.rollback()
+        flash('Error al eliminar: ' + str(e))
+
+    return redirect(url_for('home'))
 
 # Página adicional
 @app.route('/consulta')
@@ -158,7 +185,7 @@ def guardar_album():
             errores['txtAño'] = 'Ingresa un año válido.'
 
         if errores:
-            albums = Album.query.all()
+            albums = Album.query.filter_by(state=1).all()
             return render_template('formulario.html', errores=errores, albums=albums)
 
         nuevo_album = Album(titulo=titulo, artista=artista, año=año)
@@ -176,7 +203,7 @@ def guardar_album():
 # Ver todos los álbumes (opcional)
 @app.route('/albums')
 def ver_albums():
-    albums = Album.query.all()
+    albums = Album.query.filter_by(state=1).all()
     return render_template('ver_albums.html', albums=albums)
 
 # Página 404 personalizada
@@ -187,4 +214,3 @@ def pagina_no_encontrada(e):
 # Iniciar servidor
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3000, debug=True)
-
